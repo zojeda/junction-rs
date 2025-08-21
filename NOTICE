@@ -1,0 +1,19 @@
+JunctionRS
+
+Copyright (c) 2025 JunctionRS Contributors
+
+This project is dual-licensed under the MIT License and the Apache License, Version 2.0.
+
+You may obtain copies of the licenses at:
+  MIT: https://opensource.org/licenses/MIT
+  Apache 2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under these licenses is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied.
+
+Attribution Notices:
+- Portions of this software may depend on third-party crates available under
+  their own licenses as listed in Cargo.toml dependency metadata.
+
+If you add new third-party code requiring explicit attribution, list it here.

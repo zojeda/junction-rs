@@ -1,0 +1,13 @@
+error: Missing #[junction(source)] field on Edge struct
+ --> tests/ui/edge_missing_in.rs:7:10
+  |
+7 | #[derive(Edge)]
+  |          ^^^^
+  |
+  = note: this error originates in the derive macro `Edge` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/ui/edge_missing_in.rs:10:2
+   |
+10 | }
+   |  ^ consider adding a `main` function to `$DIR/tests/ui/edge_missing_in.rs`
