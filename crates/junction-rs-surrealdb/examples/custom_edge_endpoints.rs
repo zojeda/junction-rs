@@ -36,13 +36,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Insert some nodes
     let people: Vec<Person> = insert(vec![
         Person {
-            id: SimpleId::new(),
+            id: Person::create_simple_id(),
             name: "Alice".into(),
             age: 30,
             marketing: false,
         },
         Person {
-            id: SimpleId::new(),
+            id: Person::create_simple_id(),
             name: "Bob".into(),
             age: 40,
             marketing: true,
@@ -53,11 +53,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let products: Vec<Product> = insert(vec![
         Product {
-            id: SimpleId::new(),
+            id: Product::create_simple_id(),
             title: "Gadget".into(),
         },
         Product {
-            id: SimpleId::new(),
+            id: Product::create_simple_id(),
             title: "Widget".into(),
         },
     ])

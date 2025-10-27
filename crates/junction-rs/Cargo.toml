@@ -17,10 +17,12 @@ serde_json = { workspace = true }
 junction-rs-core = { path = "../junction-rs-core" }
 junction-rs-macros = { path = "../junction-rs-macros" }
 junction-rs-surrealdb = { path = "../junction-rs-surrealdb", optional = true }
+surrealdb = { workspace = true, optional = true }
+uuid = { workspace = true }
 
 [features]
 default = ["surreal"]
-surreal = ["junction-rs-surrealdb"]
+surreal = ["junction-rs-surrealdb", "surrealdb"]
 
 [dev-dependencies]
 tokio = { workspace = true }

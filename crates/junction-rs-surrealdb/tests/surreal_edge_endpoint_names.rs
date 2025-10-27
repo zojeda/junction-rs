@@ -45,11 +45,11 @@ async fn insert_with_custom_endpoint_names() {
 
     // Seed two persons
     let p1 = PersonDemo {
-        id: SimpleId::new(),
+        id: PersonDemo::create_simple_id(),
         name: "Alice".into(),
     };
     let p2 = PersonDemo {
-        id: SimpleId::new(),
+        id: PersonDemo::create_simple_id(),
         name: "Bob".into(),
     };
     let _ = insert(vec![p1.clone(), p2.clone()])

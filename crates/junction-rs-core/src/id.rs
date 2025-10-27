@@ -15,7 +15,8 @@ pub struct SimpleId<T> {
 }
 
 impl<T> SimpleId<T> {
-    pub fn new() -> Self {
+    #[allow(dead_code)] // kept for potential internal use / future instrumentation
+    pub(crate) fn new() -> Self {
         Self {
             value: Uuid::new_v4(),
             _marker: PhantomData,
@@ -39,7 +40,7 @@ impl<T> SimpleId<T> {
 
 impl<T> Default for SimpleId<T> {
     fn default() -> Self {
-        Self::new()
+        Self::from_uuid(Uuid::new_v4())
     }
 }
 

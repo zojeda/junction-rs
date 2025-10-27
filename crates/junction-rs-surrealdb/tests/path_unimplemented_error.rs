@@ -25,7 +25,7 @@ fn multi_hop_path_compiles_phase_a() {
     use junction_rs::graph::{
         Direction, EdgeRef, EdgeSet, GraphTraversal, ReturnMode, StartAnchor, TraversalStep,
     };
-    let start_id = SimpleId::<Person>::new();
+    let start_id = Person::create_simple_id();
     let mut gt = GraphTraversal {
         start: StartAnchor {
             table: Person::TABLE,

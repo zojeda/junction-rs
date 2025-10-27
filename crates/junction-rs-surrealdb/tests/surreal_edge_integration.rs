@@ -46,13 +46,13 @@ async fn insert_and_query_edges() {
     // Insert edges
     let edges = vec![
         Follows {
-            r#in: SimpleId::new(),
-            r#out: SimpleId::new(),
+            r#in: User::create_simple_id(),
+            r#out: User::create_simple_id(),
             since: 2020,
         },
         Follows {
-            r#in: SimpleId::new(),
-            r#out: SimpleId::new(),
+            r#in: User::create_simple_id(),
+            r#out: User::create_simple_id(),
             since: 2021,
         },
     ];

@@ -1,3 +1,20 @@
+### Selecting a Specific Record by Typed Id
+
+To anchor a traversal or fetch a single row starting from a known record you can pass a typed `SimpleId<N>` directly via `record_id`:
+
+```rust
+let pid: SimpleId<Person> = /* obtained or stored earlier */;
+let name_only: Option<PersonName> = select::<PersonName>(All)
+    .record_id(&pid) // borrow; sets table automatically based on `Person`
+    .column(Person::schema().name)
+    .return_one(db.clone())
+    .await?;
+```
+
+This replaces the earlier string-based variant `record_id("uuid")`. The builder now infers and sets the table from the type parameter of the `SimpleId`, eliminating accidental cross-table lookups and avoiding manual `from(Person::table())` calls. For projections whose target struct is not the same Node type, the generic after `select::<ProjectionType>` does not need to match the id's type – the `record_id` method is generic over any `Node`.
+
+Use `by_id(id)` for the common pattern of retrieving a single full entity (it sets a defensive `LIMIT 1`). Prefer `record_id` when you need traversal segments (e.g. `forward` / `backward`) or a projection rather than the full Node.
+
 # Query Builders
 
 JunctionRS provides chainable builders returning an AST before execution via an adapter implementing `DbExecutor`.

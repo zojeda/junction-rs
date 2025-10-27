@@ -41,13 +41,13 @@ async fn recommend_high_score_selection() {
     let db = setup_adapter().await;
 
     let alice = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "Alice".into(),
         age: 30,
         marketing: true,
     };
     let bob = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "Bob".into(),
         age: 28,
         marketing: false,
@@ -60,11 +60,11 @@ async fn recommend_high_score_selection() {
         .unwrap();
 
     let laptop = Product {
-        id: SimpleId::new(),
+        id: Product::create_simple_id(),
         name: "Laptop".into(),
     };
     let phone = Product {
-        id: SimpleId::new(),
+        id: Product::create_simple_id(),
         name: "Phone".into(),
     };
     let _ = insert(vec![laptop.clone(), phone.clone()])

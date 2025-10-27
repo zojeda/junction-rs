@@ -2002,7 +2002,9 @@ dependencies = [
  "junction-rs-surrealdb",
  "serde",
  "serde_json",
+ "surrealdb",
  "tokio",
+ "uuid",
 ]
 
 [[package]]
@@ -2026,6 +2028,7 @@ dependencies = [
  "quote",
  "syn 2.0.106",
  "trybuild",
+ "uuid",
 ]
 
 [[package]]

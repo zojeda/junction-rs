@@ -40,12 +40,12 @@ async fn setup_adapter() -> SurrealDbAdapter {
 async fn multi_edge_filters_and_projection() {
     let db = setup_adapter().await;
     let a = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "Alice".into(),
         age: 40,
     };
     let b = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "Bob".into(),
         age: 35,
     };

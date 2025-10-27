@@ -46,7 +46,7 @@ async fn traverse_products_from_person_record() {
     let db = setup_adapter().await;
 
     let tom = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "tom".into(),
     };
     let _ = insert(vec![tom.clone()])
@@ -55,11 +55,11 @@ async fn traverse_products_from_person_record() {
         .await
         .unwrap();
     let phone_seed = Product {
-        id: SimpleId::new(),
+        id: Product::create_simple_id(),
         name: "Phone".into(),
     };
     let laptop_seed = Product {
-        id: SimpleId::new(),
+        id: Product::create_simple_id(),
         name: "Laptop".into(),
     };
     let created_products: Vec<Product> = insert(vec![phone_seed.clone(), laptop_seed.clone()])
@@ -96,8 +96,7 @@ async fn traverse_products_from_person_record() {
     .unwrap();
 
     let rows: Vec<Product> = select::<Product>(All)
-        .from(Person::table())
-        .record_id(tom.id.as_uuid_str())
+        .record_id(&tom.id)
         .forward::<Purchased, Product>()
         .return_many(db.clone())
         .await
@@ -110,11 +109,11 @@ async fn multi_hop_recommendation_like_traversal() {
     let db = setup_adapter().await;
 
     let tom = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "tom".into(),
     };
     let bob = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "bob".into(),
     };
     let _ = insert(vec![tom.clone(), bob.clone()])
@@ -123,11 +122,11 @@ async fn multi_hop_recommendation_like_traversal() {
         .await
         .unwrap();
     let a_seed = Product {
-        id: SimpleId::new(),
+        id: Product::create_simple_id(),
         name: "A".into(),
     };
     let b_seed = Product {
-        id: SimpleId::new(),
+        id: Product::create_simple_id(),
         name: "B".into(),
     };
     let created_products: Vec<Product> = insert(vec![a_seed.clone(), b_seed.clone()])
@@ -170,8 +169,7 @@ async fn multi_hop_recommendation_like_traversal() {
     .unwrap();
 
     let rows: Vec<Product> = select::<Product>(All)
-        .from(Person::table())
-        .record_id(tom.id.as_uuid_str())
+        .record_id(&tom.id)
         .forward::<Purchased, Product>()
         .backward::<Purchased, Person>()
         .forward::<Purchased, Product>()

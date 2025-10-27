@@ -3,10 +3,25 @@
 `SimpleId<T>` wraps a UUID and encodes table context for strong typing.
 
 ## Creation
+
+Prior to v0.X.Y you could construct IDs directly:
 ```rust
-let id = SimpleId::<Person>::new();
+// Deprecated (v0.X.Y):
+// let id = SimpleId::<Person>::new();
 ```
-Or via helper `Person::create_simple_id()` if exposed by derive.
+
+The `SimpleId::new()` constructor is now crate-private to enforce using type-aware helpers emitted by the derive macros. Use:
+```rust
+// Random new ID
+let id = Person::create_simple_id();
+
+// Wrap an existing UUID you obtained elsewhere
+use uuid::Uuid;
+let raw = Uuid::new_v4();
+let id_from_uuid = Person::from_uuid(raw);
+```
+
+> Migration Note (v0.X.Y): Replace any `SimpleId::<T>::new()` calls with `<T>::create_simple_id()` (random) or `<T>::from_uuid(uuid)` (wrap existing). The change centralizes ID creation behind the Node/Edge type for clearer ergonomics and potential future instrumentation.
 
 ## Serialized Forms
 - Preferred: `"person:550e8400-e29b-41d4-a716-446655440000"`

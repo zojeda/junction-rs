@@ -14,7 +14,8 @@ async fn main() -> Result<(), DbError> {
         .await?;
 
     // Fetch person by typed id.
-    if let Some(found) = get_by_id::<Person, _>(p.id, db.clone()).await? {
+    let pid = p.id.clone();
+    if let Some(found) = get_by_id::<Person, _>(pid.clone(), db.clone()).await? {
         println!("Found person: {} (age {})", found.name, found.age);
     } else {
         println!("Person not found");
@@ -24,8 +25,7 @@ async fn main() -> Result<(), DbError> {
     #[derive(Deserialize)]
     struct PersonName { name: String }
     if let Some(name_only) = select::<PersonName>(All)
-        .from(Person::table())
-        .record_id(p.id.as_uuid_str())
+        .record_id(&pid)
         .return_one(db.clone())
         .await? {
         println!("Name-only projection: {}", name_only.name);

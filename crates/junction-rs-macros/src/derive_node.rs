@@ -82,8 +82,14 @@ pub(crate) fn derive_node(input: TokenStream) -> TokenStream {
       }
       impl junction_rs::traits::HasTableName for #name { fn table_name() -> &'static str { <#name as junction_rs::traits::Node>::TABLE } }
       impl #name {
+          /// Create a new randomly generated `SimpleId<#name>`.
           pub fn create_simple_id() -> junction_rs::id::SimpleId<#name> {
-              junction_rs::id::SimpleId::new()
+              // Uses WithId blanket impl; kept as inherent for discoverability.
+              <#name as junction_rs::traits::WithId>::create_simple_id()
+          }
+          /// Wrap an existing `uuid::Uuid` into a strongly typed `SimpleId<#name>`.
+          pub fn from_uuid(id: uuid::Uuid) -> junction_rs::id::SimpleId<#name> {
+              <#name as junction_rs::traits::WithId>::from_uuid(id)
           }
       }
       pub mod #mod_ident {

@@ -33,11 +33,11 @@ async fn setup() -> SurrealDbAdapter {
 async fn relate_edges_creates_edge() {
     let db = setup().await;
     let a = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "A".into(),
     };
     let b = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "B".into(),
     };
     insert(vec![a.clone(), b.clone()])

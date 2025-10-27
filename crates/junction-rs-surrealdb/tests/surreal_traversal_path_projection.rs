@@ -43,23 +43,23 @@ async fn path_projection_exact_shape() {
 
         // Seed graph: person tom & others -> products, plus other purchasers to create inbound segment
         let tom = Person {
-            id: SimpleId::new(),
+            id: Person::create_simple_id(),
             name: "tom".into(),
         };
         let other = Person {
-            id: SimpleId::new(),
+            id: Person::create_simple_id(),
             name: "jaime".into(),
         };
         let p1 = Product {
-            id: SimpleId::new(),
+            id: Product::create_simple_id(),
             name: "Phone".into(),
         };
         let p2 = Product {
-            id: SimpleId::new(),
+            id: Product::create_simple_id(),
             name: "Laptop".into(),
         };
         let p3 = Product {
-            id: SimpleId::new(),
+            id: Product::create_simple_id(),
             name: "Camera".into(),
         };
 
@@ -111,8 +111,7 @@ async fn path_projection_exact_shape() {
         // We only verify semantic result (contains recommended product(s) like Camera) since capturing raw SQL
         // is not exposed yet. If needed, future work can add an inspection hook.
         let results: Vec<Product> = select::<Product>(All)
-            .from(Person::table())
-            .record_id(tom.id.as_uuid_str())
+            .record_id(&tom.id)
             .forward::<Purchased, Product>()
             .backward::<Purchased, Person>()
             .forward::<Purchased, Product>()

@@ -44,12 +44,12 @@ pub struct Planet {
 fn sample_spaceships() -> Vec<SpaceShip> {
     vec![
         SpaceShip {
-            id: SimpleId::new(),
+            id: SpaceShip::create_simple_id(),
             name: "Millennium Falcon".into(),
             age: 79,
         },
         SpaceShip {
-            id: SimpleId::new(),
+            id: SpaceShip::create_simple_id(),
             name: "Starship Enterprise".into(),
             age: 15,
         },

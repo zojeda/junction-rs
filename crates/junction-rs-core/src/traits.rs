@@ -82,6 +82,24 @@ pub trait Edge:
     }
 }
 
+/// Common helper trait for entities that own a `SimpleId<T>` primary key.
+///
+/// Provides ergonomic constructors while keeping the raw `SimpleId::new()`
+/// hidden from external users. Implemented automatically for all `Node` and
+/// `Edge` types via blanket impls.
+pub trait WithId: Sized + HasTableName {
+    /// Create a new `SimpleId<Self>` with a randomly generated UUID.
+    fn create_simple_id() -> crate::id::SimpleId<Self> {
+        crate::id::SimpleId::from_uuid(uuid::Uuid::new_v4())
+    }
+    /// Wrap an existing `uuid::Uuid` in a strongly typed `SimpleId<Self>`.
+    fn from_uuid(id: uuid::Uuid) -> crate::id::SimpleId<Self> {
+        crate::id::SimpleId::from_uuid(id)
+    }
+}
+
+impl<T: HasTableName> WithId for T {}
+
 /// Types that can be inserted via the unified `insert` API. Implemented by the derive macros
 /// for `Node` and `Edge` so we avoid overlapping blanket impl coherence issues.
 pub trait Insertable: Serialize + DeserializeOwned + Sized + Send + Sync + 'static {

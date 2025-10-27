@@ -34,7 +34,7 @@ fn multihop_union_edge_error() {
     use junction_rs::graph::{
         Direction, EdgeRef, EdgeSet, GraphTraversal, ReturnMode, StartAnchor, TraversalStep,
     };
-    let start_id = SimpleId::<Person>::new();
+    let start_id = Person::create_simple_id();
     let mut gt = GraphTraversal {
         start: StartAnchor {
             table: Person::TABLE,
@@ -83,7 +83,7 @@ fn multihop_inward_edge_error() {
     use junction_rs::graph::{
         Direction, EdgeRef, EdgeSet, GraphTraversal, ReturnMode, StartAnchor, TraversalStep,
     };
-    let start_id = SimpleId::<Person>::new();
+    let start_id = Person::create_simple_id();
     let mut gt = GraphTraversal {
         start: StartAnchor {
             table: Person::TABLE,
@@ -123,7 +123,7 @@ fn multihop_edge_filter_error() {
         Direction, EdgeRef, EdgeSet, GraphTraversal, ReturnMode, StartAnchor, StepFilter,
         TraversalStep,
     };
-    let start_id = SimpleId::<Person>::new();
+    let start_id = Person::create_simple_id();
     let mut gt = GraphTraversal {
         start: StartAnchor {
             table: Person::TABLE,

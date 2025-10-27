@@ -107,10 +107,8 @@ async fn main() {
     // Simple recommendation: products bought by people who bought the same as Alice
     // Path: person -> bought -> product <- bought <- person -> bought -> product
     // DSL:           forward              backward            forward
-    let alice_anchor = format!("{}:{}", Person::TABLE, alice.id.as_uuid_str());
     let recommended = select::<Product>(All)
-        .from(Person::table())
-        .record_id(alice_anchor)
+        .record_id(&alice.id)
         .forward::<Bought, Product>()
         .backward::<Bought, Person>()
         .forward::<Bought, Product>()

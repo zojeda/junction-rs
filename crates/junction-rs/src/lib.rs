@@ -46,6 +46,7 @@ pub mod prelude {
     pub use junction_rs_core::id::SimpleId;
     pub use junction_rs_core::prelude::*;
     pub use junction_rs_core::traits::*;
+    pub use junction_rs_core::traits::WithId;
     pub use junction_rs_macros::*;
     #[cfg(feature = "surreal")]
     pub use junction_rs_surrealdb::*;

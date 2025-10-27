@@ -222,7 +222,10 @@ pub(crate) fn derive_edge(input: TokenStream) -> TokenStream {
                 <#name as junction_rs::traits::Edge>::schema()
             }
             pub fn create_simple_id() -> junction_rs::id::SimpleId<#name> {
-                junction_rs::id::SimpleId::new()
+                <#name as junction_rs::traits::WithId>::create_simple_id()
+            }
+            pub fn from_uuid(id: uuid::Uuid) -> junction_rs::id::SimpleId<#name> {
+                <#name as junction_rs::traits::WithId>::from_uuid(id)
             }
             /// Convenience helper returning (source_field_name, target_field_name)
             pub fn endpoint_field_names() -> (&'static str, &'static str) {

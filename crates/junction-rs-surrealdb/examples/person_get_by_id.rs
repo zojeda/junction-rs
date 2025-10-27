@@ -16,10 +16,8 @@ async fn main() -> Result<(), DbError> {
 
     #[derive(serde::Deserialize)]
     struct PersonName { name: String }
-    let uuid_part = pid.as_uuid_str().to_string();
     if let Some(name_only) = select::<PersonName>(All)
-        .from(Person::table())
-        .record_id(uuid_part)
+        .record_id(&pid)
         .return_one(db.clone())
         .await? {
         println!("Name-only projection: {}", name_only.name);

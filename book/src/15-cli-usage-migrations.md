@@ -40,6 +40,12 @@ CLI maintains state about applied migrations to prevent reapplication.
 Enhanced automated migration generation, validation steps, and multi-adapter compatibility.
 
 > Migration Note (vX.Y.Z): Added `get_by_id` helper and `SelectBuilder::by_id` + `return_one` methods for single-record retrieval.
-> Old: manual chaining with `.from(...).record_id(uuid).return_many(...).await?.into_iter().next()`.
+> Old (pre v0.2.0): manual chaining with `.from(...).record_id(uuid).return_many(...).await?.into_iter().next()`.
+> Migration Note (v0.2.0): `record_id` now requires a typed `SimpleId<NodeType>` and auto sets the table. Update calls:
+> Old: `select::<PersonName>(All).from(Person::table()).record_id(person_id_string)`
+> New: `select::<PersonName>(All).record_id(person_id)`
+> For full entity retrieval prefer `select::<Person>(All).by_id(person_id)` or the helper `get_by_id::<Person,_>(person_id, db).await?`.
 > New: `let user = get_by_id(user_id, db.clone()).await?;` or builder `select::<User>(All).by_id(user_id).return_one(db).await?`.
 > Reason: Reduce boilerplate, enforce LIMIT 1 semantics, and provide Option ergonomics for absence.
+
+> Migration Note (v0.X.Y): Public `SimpleId::new()` removed (now crate-private). Use `<NodeOrEdge>::create_simple_id()` or `<NodeOrEdge>::from_uuid(uuid)`. This affects any CLI examples that previously showed direct `SimpleId::<T>::new()` construction.

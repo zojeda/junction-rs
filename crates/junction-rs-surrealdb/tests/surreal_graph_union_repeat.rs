@@ -47,17 +47,17 @@ async fn setup_adapter() -> SurrealDbAdapter {
 async fn union_and_repeat_traversal_executes() {
     let db = setup_adapter().await;
     let a = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "Alice".into(),
         age: 30,
     };
     let b = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "Bob".into(),
         age: 31,
     };
     let c = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "Carol".into(),
         age: 32,
     };

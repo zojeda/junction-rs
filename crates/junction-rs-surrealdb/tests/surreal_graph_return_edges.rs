@@ -38,11 +38,11 @@ async fn setup_adapter() -> SurrealDbAdapter {
 async fn return_edges_last_step() {
     let db = setup_adapter().await;
     let a = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "A".into(),
     };
     let b = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "B".into(),
     };
     insert(vec![a.clone(), b.clone()])
@@ -91,11 +91,11 @@ async fn return_edges_last_step() {
 async fn edge_orientation_probe() {
     let db = setup_adapter().await;
     let a = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "A".into(),
     };
     let b = Person {
-        id: SimpleId::new(),
+        id: Person::create_simple_id(),
         name: "B".into(),
     };
     insert(vec![a.clone(), b.clone()])

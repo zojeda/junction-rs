@@ -9,15 +9,9 @@ Application crates should normally depend on the façade crate (`junction-rs`). 
 
 ```toml
 [dependencies]
-junction-rs-core = { path = "../junction-rs-core" }
+junction-rs = { git = "https://github.com/zojeda/junction-rs.git",  features = ["surreal"] }
 ```
 
-Companion crates:
-
-```toml
-junction-rs-macros = { path = "../junction-rs-macros" }
-junction-rs = { path = "../junction-rs" } # façade re-export (recommended for apps)
-```
 
 ## Core pieces
 
@@ -188,8 +182,8 @@ let users = vec![
 // let inserted: Vec<User> = insert(users).into().return_many(db).await?;
 ```
 
-Update with content and predicate:
-
+    User { id: User::create_simple_id(), name: "Alice".into() },
+    User { id: User::create_simple_id(), name: "Bob".into() },
 ```rust
 let s = User::schema();
 // let updated: Vec<User> = update(User::table())

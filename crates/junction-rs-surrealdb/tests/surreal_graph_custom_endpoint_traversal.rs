@@ -31,15 +31,15 @@ async fn setup_adapter() -> SurrealDbAdapter {
 async fn traversal_with_custom_endpoint_names() {
     let db = setup_adapter().await;
     let a = PersonCg {
-        id: SimpleId::new(),
+        id: PersonCg::create_simple_id(),
         name: "Alice".into(),
     };
     let b = PersonCg {
-        id: SimpleId::new(),
+        id: PersonCg::create_simple_id(),
         name: "Bob".into(),
     };
     let c = PersonCg {
-        id: SimpleId::new(),
+        id: PersonCg::create_simple_id(),
         name: "Carol".into(),
     };
     let _ = insert(vec![a.clone(), b.clone(), c.clone()])
@@ -66,10 +66,8 @@ async fn traversal_with_custom_endpoint_names() {
     .unwrap();
 
     // Traverse a -> b -> (edge) -> c (two hops) expecting terminal nodes with Carol included.
-    let anchor = format!("{}:{}", PersonCg::TABLE, a.id.as_uuid_str());
     let rows: Vec<PersonCg> = select::<PersonCg>(All)
-        .from(PersonCg::table())
-        .record_id(anchor)
+        .record_id(&a.id)
         .forward::<KnowsCg, PersonCg>()
         .forward::<KnowsCg, PersonCg>()
         .distinct()

@@ -42,19 +42,19 @@ async fn multi_edge_insert_with_default_and_custom_endpoints() {
     let db = setup_adapter().await;
     // Create people
     let p1 = MePerson {
-        id: SimpleId::new(),
+        id: MePerson::create_simple_id(),
         name: "Alice".into(),
     };
     let p2 = MePerson {
-        id: SimpleId::new(),
+        id: MePerson::create_simple_id(),
         name: "Bob".into(),
     };
     let p3 = MePerson {
-        id: SimpleId::new(),
+        id: MePerson::create_simple_id(),
         name: "Carol".into(),
     };
     let p4 = MePerson {
-        id: SimpleId::new(),
+        id: MePerson::create_simple_id(),
         name: "Dave".into(),
     };
     insert(vec![p1.clone(), p2.clone(), p3.clone(), p4.clone()])
@@ -168,10 +168,8 @@ async fn multi_edge_insert_with_default_and_custom_endpoints() {
     assert_eq!(last_segment(second_out), p4.id.as_uuid_str());
 
     // Traversal check: from p1 outward along custom edge should reach p3
-    let start_anchor = format!("{}:{}", MePerson::TABLE, p1.id.as_uuid_str());
     let hop: Vec<MePerson> = select::<MePerson>(All)
-        .from(MePerson::table())
-        .record_id(start_anchor)
+        .record_id(&p1.id)
         .forward::<FollowsCustom, MePerson>()
         .return_many(db.clone())
         .await

@@ -46,7 +46,7 @@ async fn setup() -> SurrealDbAdapter {
     junction_rs_surrealdb::relate_edges(
         &adapter,
         vec![Knows {
-            id: SimpleId::new(),
+            id: Knows::create_simple_id(),
             r#out: p1.id.clone(),
             r#in: p2.id.clone(),
             strength: 5,

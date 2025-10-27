@@ -15,7 +15,10 @@ pub struct SelectBuilder<T> {
     ordering: Vec<Ordering>,
     limit: Option<u64>,
     group_by: Vec<GroupBySpec>,
-    /// Optional id for selecting from a specific record `table:id`.
+    /// Optional UUID part for selecting from a specific record. Now set via
+    /// `record_id(SimpleId<T>)` to ensure type safety and table alignment.
+    /// Stored internally as the raw UUID string (hyphenated) so backends can
+    /// prepend table name or transform as needed.
     record_id: Option<String>,
     /// Traversal segments to append after the base FROM target.
     traversal: Vec<TraversalSeg>,
@@ -121,8 +124,12 @@ impl<E: crate::traits::Edge> EdgeSelectBuilder<E> {
         self.inner = self.inner.star();
         self
     }
-    pub fn record_id(mut self, id: impl Into<String>) -> Self {
-        self.inner = self.inner.record_id(id);
+    /// Anchor edge traversal starting from a specific node record by typed id.
+    pub fn record_id<N: crate::traits::Node>(mut self, id: &crate::id::SimpleId<N>) -> Self {
+        // Delegate to inner builder; since inner is SelectBuilder<E> we cannot directly call its
+        // record_id (typed on E). Instead we manually apply table + raw uuid.
+        self.inner.table = Some(N::TABLE);
+        self.inner.record_id = Some(id.as_uuid_str());
         self
     }
     pub fn forward<EE: crate::traits::Edge, N: crate::traits::Node>(mut self) -> Self {
@@ -195,8 +202,13 @@ impl<T> SelectBuilder<T> {
         self
     }
     /// Target a specific record id (appends as `table:id`). Caller must ensure id validity for backend.
-    pub fn record_id(mut self, id: impl Into<String>) -> Self {
-        self.record_id = Some(id.into());
+    /// Target a specific record id using a typed `SimpleId<T>`. This replaces the previous
+    /// `record_id(String)` API to provide compile-time safety ensuring the id belongs to the
+    /// same Node type being queried. For edge traversal starting points, use the node type.
+    /// If you previously passed a raw `uuid` string call `.by_id(id)` or construct a typed id.
+    pub fn record_id<N: crate::traits::Node>(mut self, id: &crate::id::SimpleId<N>) -> Self {
+        self.table = Some(N::TABLE); // ensure table alignment if not already set
+        self.record_id = Some(id.as_uuid_str());
         self
     }
     /// Select a single row by a typed `SimpleId<T>`. Sets the table, internal record id and a LIMIT 1.

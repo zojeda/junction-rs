@@ -20,7 +20,7 @@ struct Knows {
 
 #[test]
 fn build_traversal_ast_forward_backward() {
-    let alice = SimpleId::<Person>::new();
+    let alice = Person::create_simple_id();
     let t = start_at(alice.clone())
         .forward::<Knows>()
         .backward::<Knows>()
@@ -39,7 +39,7 @@ fn build_traversal_from_all() {
 fn compile_inbound_arrow_direction() {
     // Build a traversal person->knows->person<-knows<-person (out then in) and ensure
     // the intermediate inbound node hop uses <-person not ->person.
-    let alice = SimpleId::<Person>::new();
+    let alice = Person::create_simple_id();
     let traversal = start_at(alice).forward::<Knows>().backward::<Knows>();
     // Convert to query and compile using Surreal adapter compiler directly.
     let q = traversal.into_traversal();

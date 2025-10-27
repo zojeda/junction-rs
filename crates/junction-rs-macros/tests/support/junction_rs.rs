@@ -1,10 +1,18 @@
 #![allow(dead_code)]
 use std::marker::PhantomData;
 
+extern crate uuid;
+
+pub mod id {
+    use super::PhantomData;
+    #[derive(Debug, Clone, PartialEq, Eq)]
+    pub struct SimpleId<T> { _marker: PhantomData<T> }
+    impl<T> SimpleId<T> { pub(crate) fn new() -> Self { Self { _marker: PhantomData } } }
+}
+
 pub mod traits {
-    pub trait HasTableName {
-        fn table_name() -> &'static str;
-    }
+    use super::id::SimpleId;
+    pub trait HasTableName { fn table_name() -> &'static str; }
 
     pub trait Node: HasTableName {
         const TABLE: &'static str;
@@ -28,6 +36,13 @@ pub mod traits {
             None
         }
     }
+
+    pub trait WithId: HasTableName + Sized {
+        fn create_simple_id() -> SimpleId<Self> { SimpleId::new() }
+        fn from_uuid(_id: uuid::Uuid) -> SimpleId<Self> { SimpleId::new() }
+    }
+
+    impl<T: HasTableName> WithId for T {}
 }
 
 pub mod schema {
@@ -51,19 +66,4 @@ pub mod schema {
     }
 }
 
-pub mod id {
-    use super::PhantomData;
-
-    #[derive(Debug, Clone, PartialEq, Eq)]
-    pub struct SimpleId<T> {
-        _marker: PhantomData<T>,
-    }
-
-    impl<T> SimpleId<T> {
-        pub fn new() -> Self {
-            Self {
-                _marker: PhantomData,
-            }
-        }
-    }
-}
+// (id module moved earlier)

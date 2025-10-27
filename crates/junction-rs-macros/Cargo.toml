@@ -19,3 +19,4 @@ junction-rs-core = { path = "../junction-rs-core" }
 [dev-dependencies]
 trybuild = { workspace = true }
 chrono = { workspace = true }
+uuid = { workspace = true }
