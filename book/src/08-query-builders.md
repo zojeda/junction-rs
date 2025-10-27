@@ -44,3 +44,31 @@ Chain `.column(...)` or project into subset structs.
 
 ## Error Handling
 All builder executions yield `Result<Vec<T>, DbError>`; inspect adapter vs serde variants for diagnostics.
+
+### Single Record Retrieval (New in vX.Y.Z)
+
+Use `get_by_id` for concise single-row lookups by typed id:
+
+```rust
+let user: Option<User> = get_by_id(user_id, db.clone()).await?;
+```
+
+Alternatively, the builder form provides more control:
+
+```rust
+let user = select::<User>(All)
+    .by_id(user_id) // sets table, record id, LIMIT 1
+    .return_one(db.clone()) // Result<Option<User>, DbError>
+    .await?;
+```
+
+Projection example:
+
+```rust
+#[derive(Deserialize)]
+struct UserName { name: String }
+let user_name: Option<UserName> = select::<UserName>(All)
+    .by_id(user_id)
+    .return_one(db.clone())
+    .await?;
+```

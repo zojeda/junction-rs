@@ -86,5 +86,78 @@ let older: Vec<PersonNameAge> = select::<PersonNameAge>(All)
 - Add feature flag in root `Cargo.toml` enabling optional dependency + adapter re-export.
 - Provide integration tests mirroring the Surreal ones.
 
+## 15. Documentation & Book Updates (MANDATORY ON API CHANGE)
+Whenever you change any public API surface you MUST update the mdBook content under `book/src`. Treat docs as part of the build. A PR that alters API without doc updates must either:
+1. Include the appropriate chapter edits, or
+2. Add an explicit `[no-doc-change]` note in the PR description with a justification (rare: internal refactor leaving all public signatures & behavior intact).
+
+### What Counts as a Public API Change
+- Adding/removing/renaming any `pub` item re-exported by the façade crate (`crates/junction-rs`) – functions, structs, enums, traits, macros, constants, modules.
+- Changing trait method signatures (`DbExecutor`, `Node`, `Edge`, expression types, query builders).
+- Altering macro parameters or generated schema field semantics (derive `Node` / `Edge`).
+- Adding/removing expression operators or column convenience methods.
+- Modifying `SimpleId` serialization/deserialization rules.
+- Extending the query AST with new query kinds, aggregation forms, traversal constructs, ordering or filtering capabilities.
+- Adapter-visible behavior changes (compiler output, error mapping contract).
+
+### Chapters to Review / Update (Targeted Mapping)
+| Change Type | Chapters |
+|-------------|----------|
+| New/changed high-level concepts | `01-introduction`, `02-core-concepts`, `03-getting-started` |
+| Node / Edge macro or schema alterations | `04-defining-models`, `05-schema-and-columns`, `14-derive-macros` |
+| ID or serialization tweaks | `06-ids-and-serialization` |
+| Expression DSL updates | `07-expression-dsl` |
+| Query builder / projection / ordering | `08-query-builders`, `09-projection` |
+| Aggregations / group-by changes | `10-aggregation-group-by` |
+| Graph traversal / edge semantics | `11-graph-traversal` |
+| Adapter contract / Surreal specifics | `12-surrealdb-adapter`, `13-implementing-new-adapter` |
+| CLI migrations or breaking changes | `15-cli-usage-migrations` |
+| Examples canonical snippet changes | `16-annotated-examples` & snippet in section 13 here |
+| Roadmap / design rationale updates | `18-roadmap-design-notes` |
+
+### Required Actions Checklist
+1. Build & test after code change:
+```bash
+cargo build --all-features
+cargo test --all-features
+```
+2. Identify impacted symbols (replace `SymbolName` as needed):
+```bash
+grep -R "OldSymbolName" book/src crates/junction-rs/src crates/junction-rs-core/src || true
+```
+3. Update relevant chapters (see mapping table). Ensure examples reflect new API and still compile conceptually.
+4. If breaking change: add a "Migration Note:" block to the closest chapter (e.g., `15-cli-usage-migrations.md`). Format:
+```
+> Migration Note (vX.Y.Z): <brief description>
+> Old: select::<Person>(All)...
+> New: select(All::<Person>)... (reason: ...)
+```
+5. Re-build the book locally (requires `mdbook` installed):
+```bash
+mdbook build book
+```
+6. Visually spot-check changed chapters (open `book/build/<chapter>.html`).
+7. Update canonical example snippet in section 13 above if its shape changes.
+8. Commit code + docs together. Do NOT split across multiple PRs unless coordinated.
+
+### Quality Gate for Docs
+- PR Reviewers: reject if any public item diff lacks corresponding doc diff unless `[no-doc-change]` justified.
+- Run grep for removed symbol names to ensure no stale references remain.
+- Keep examples using façade crate (`junction-rs`) – never switch to core paths in docs.
+
+### Quick Verification Script (Optional)
+Add (or run ad-hoc) a script to sanity-check that main examples compile with Surreal feature:
+```bash
+cargo run --example select_person --features surreal --quiet
+cargo run --example insert_person --features surreal --quiet
+```
+
+### Style
+- Prefer short, actionable code blocks.
+- Highlight new API with a dedicated "New in vX.Y.Z" sentence.
+- Keep migration notes cumulatively; don't delete old ones.
+
+Failure to update docs increases user friction; treat this as part of Definition of Done.
+
 ---
 If any area feels under‑specified (e.g., AST layout or compiler internals) request deeper dive into the respective module. Feedback welcome to refine this guide.

@@ -37,3 +37,28 @@ Example where edge uses semantic endpoint names; adapter maps internally while p
 - Keep builder chains readable by aligning dots.
 
 Refer to source code for full runnable context.
+
+## Fetch Single User By ID (New in vX.Y.Z)
+
+```rust
+use junction_rs::prelude::*;
+
+#[derive(Serialize, Deserialize, Node)]
+#[junction(table = "user")]
+struct User { id: SimpleId<User>, name: String }
+
+async fn fetch(db: impl DbExecutor, user_id: SimpleId<User>) -> Result<Option<User>, DbError> {
+	get_by_id(user_id, db).await
+}
+```
+
+Projection variant:
+
+```rust
+#[derive(Deserialize)]
+struct UserName { name: String }
+let maybe_name: Option<UserName> = select::<UserName>(All)
+	.by_id(user_id)
+	.return_one(db.clone())
+	.await?;
+```

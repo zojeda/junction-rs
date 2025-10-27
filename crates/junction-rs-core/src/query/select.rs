@@ -64,7 +64,8 @@ pub struct TraversalSeg {
 pub fn select<T>(_all: All) -> SelectBuilder<T> {
     SelectBuilder {
         table: None,
-        fields: vec![],
+        // Implicit default projection: star (cleared when explicit columns/expr added).
+        fields: vec![SelectField::Star],
         filter: None,
         ordering: vec![],
         limit: None,
@@ -198,6 +199,20 @@ impl<T> SelectBuilder<T> {
         self.record_id = Some(id.into());
         self
     }
+    /// Select a single row by a typed `SimpleId<T>`. Sets the table, internal record id and a LIMIT 1.
+    /// Keeps existing projection (defaults to `*`). Additional filters/order/columns after this call are allowed
+    /// but typically unnecessary. Intended for ergonomic single-entity retrieval.
+    pub fn by_id(mut self, id: crate::id::SimpleId<T>) -> Self
+    where
+        T: crate::traits::Node,
+    {
+        self.table = Some(T::TABLE);
+        // Use raw UUID part only; backend compiler prepends table name if needed.
+        self.record_id = Some(id.as_uuid_str().to_string());
+        // Defensive limit to ensure adapter cannot return multiple rows.
+        self.limit = Some(1);
+        self
+    }
     /// Traverse forward along an edge table ( `->edge->` ).
     pub fn forward<E: crate::traits::Edge, N: crate::traits::Node>(mut self) -> Self {
         self.traversal.push(TraversalSeg {
@@ -257,13 +272,23 @@ impl<T> SelectBuilder<T> {
     }
     /// Project all columns (default)
     pub fn star(mut self) -> Self {
-        self.fields.push(SelectField::Star);
+        // Explicit star request appends only if not already sole implicit projection.
+        if !(self.fields.len() == 1 && matches!(self.fields[0], SelectField::Star)) {
+            self.fields.push(SelectField::Star);
+        }
         self
+    }
+    /// Clear implicit initial star so explicit projection fully replaces it.
+    fn clear_implicit_star(&mut self) {
+        if self.fields.len() == 1 && matches!(self.fields[0], SelectField::Star) {
+            self.fields.clear();
+        }
     }
     /// Project a sequence of simple columns provided either as raw `&'static str`
     /// names or typed schema columns (`Col<T>`). This keeps the DSL consistent so
     /// the same schema values used in `expr!(...)` can be reused here.
     pub fn columns<C: IntoSelectColumn>(mut self, cols: &[C]) -> Self {
+        self.clear_implicit_star();
         for col in cols {
             self.fields.push(SelectField::Column(Self::col_name(col)));
         }
@@ -275,11 +300,13 @@ impl<T> SelectBuilder<T> {
     }
     /// Project a simple column by name or schema column reference.
     pub fn column<C: IntoSelectColumn>(mut self, col: C) -> Self {
+        self.clear_implicit_star();
         self.fields.push(SelectField::Column(Self::col_name(&col)));
         self
     }
     /// Project a raw expression with optional alias
     pub fn expr(mut self, expr: impl Into<String>) -> Self {
+        self.clear_implicit_star();
         self.fields.push(SelectField::Expr {
             expr: expr.into(),
             alias: None,
@@ -288,6 +315,7 @@ impl<T> SelectBuilder<T> {
     }
     /// Project a raw expression aliased as the provided name
     pub fn expr_as(mut self, expr: impl Into<String>, alias: &'static str) -> Self {
+        self.clear_implicit_star();
         self.fields.push(SelectField::Expr {
             expr: expr.into(),
             alias: Some(alias),
@@ -296,11 +324,13 @@ impl<T> SelectBuilder<T> {
     }
     /// Project count(*) as alias
     pub fn count_all_as(mut self, alias: &'static str) -> Self {
+        self.clear_implicit_star();
         self.fields.push(SelectField::CountAll { alias });
         self
     }
     /// Project count(col) as alias
     pub fn count_col_as<C: IntoSelectColumn>(mut self, col: C, alias: &'static str) -> Self {
+        self.clear_implicit_star();
         self.fields.push(SelectField::CountCol {
             col: Self::col_name(&col),
             alias,
@@ -386,6 +416,18 @@ impl<T> SelectBuilder<T> {
             distinct: self.distinct,
         }));
         db.execute::<T>(q).await
+    }
+
+    /// Execute and return at most one row as `Option<T>`.
+    /// Returns `Ok(None)` when no row matches; does NOT error on absence.
+    /// If more than one row is returned (should not happen with `by_id`), the first is taken.
+    pub async fn return_one<DB>(self, db: DB) -> Result<Option<T>, crate::traits::DbError>
+    where
+        DB: DbExecutor,
+        T: DeserializeOwned + Send,
+    {
+        let rows = self.return_many(db).await?;
+        Ok(rows.into_iter().next())
     }
 }
 

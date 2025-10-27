@@ -50,4 +50,5 @@ pub mod prelude {
     #[cfg(feature = "surreal")]
     pub use junction_rs_surrealdb::*;
     pub use serde::{Deserialize, Serialize};
+    pub use junction_rs_core::get_by_id;
 }

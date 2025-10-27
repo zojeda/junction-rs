@@ -38,3 +38,8 @@ CLI maintains state about applied migrations to prevent reapplication.
 
 ## Roadmap
 Enhanced automated migration generation, validation steps, and multi-adapter compatibility.
+
+> Migration Note (vX.Y.Z): Added `get_by_id` helper and `SelectBuilder::by_id` + `return_one` methods for single-record retrieval.
+> Old: manual chaining with `.from(...).record_id(uuid).return_many(...).await?.into_iter().next()`.
+> New: `let user = get_by_id(user_id, db.clone()).await?;` or builder `select::<User>(All).by_id(user_id).return_one(db).await?`.
+> Reason: Reduce boilerplate, enforce LIMIT 1 semantics, and provide Option ergonomics for absence.
